@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 국가결핵관리지침 퀴즈</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #f3f4f6; font-family: 'Pretendard', sans-serif; }
+        .hidden { display: none; }
+        .option-btn { transition: all 0.2s; }
+        .option-btn.selected { background-color: #dbeafe; border-color: #3b82f6; }
+        .option-btn.correct { background-color: #d1fae5; border-color: #10b981; color: #065f46; }
+        .option-btn.incorrect { background-color: #fee2e2; border-color: #ef4444; color: #991b1b; }
+    </style>
+</head>
+<body class="text-gray-800">
+    <div class="max-w-3xl mx-auto p-4 md:p-8 mt-10 bg-white rounded-xl shadow-lg">
+        <h1 class="text-3xl font-bold text-center text-blue-600 mb-2">2026 국가결핵관리지침 퀴즈</h1>
+        <p class="text-center text-gray-500 mb-6" id="status-text">매번 새로운 10문제가 무작위로 출제됩니다.</p>
+        
+        <div id="start-screen" class="text-center py-10">
+            <button id="start-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-md transition-transform transform hover:scale-105">
+                퀴즈 시작하기
+            </button>
+            <div class="mt-6 text-sm text-blue-600 font-medium">호남권질병대응센터 감염병대응과</div>
+        </div>
+
+        <div id="quiz-screen" class="hidden">
+            <div class="mb-4 flex justify-between items-center">
+                <span class="text-sm font-semibold text-gray-500" id="question-counter">문제 1 / 10</span>
+                <div class="w-2/3 bg-gray-200 rounded-full h-2.5">
+                    <div class="bg-blue-600 h-2.5 rounded-full" id="progress-bar" style="width: 10%"></div>
+                </div>
+            </div>
+            
+            <div id="question-container" class="mb-6">
+                <h2 class="text-xl font-bold mb-4" id="question-text">문제 내용</h2>
+                <div id="options-container" class="space-y-3">
+                    <!-- Options injected here -->
+                </div>
+            </div>
+
+            <div id="explanation-container" class="hidden p-4 mb-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p class="font-bold text-yellow-800 mb-1">해설:</p>
+                <p id="explanation-text" class="text-gray-700 text-sm"></p>
+            </div>
+
+            <div class="flex justify-end mt-4">
+                <button id="next-btn" class="hidden bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg">다음 문제</button>
+                <button id="submit-btn" class="hidden bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">정답 확인</button>
+            </div>
+        </div>
+
+        <div id="result-screen" class="hidden text-center py-10">
+            <h2 class="text-3xl font-bold mb-4">퀴즈 완료!</h2>
+            <p class="text-xl mb-6">당신의 점수는 <span id="score-text" class="font-bold text-blue-600 text-2xl"></span>점 입니다.</p>
+            <button id="restart-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-md">
+                새로운 문제로 다시 풀기
+            </button>
+            <button id="reset-history-btn" class="mt-4 block mx-auto text-sm text-gray-400 hover:text-red-500 underline">
+                출제 기록 초기화 (500문제 다시 풀기)
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 500제 문제 은행 데이터 바인딩
+        const questionBank = [{"id": 1, "q": "가족접촉자 조사 대상 기준 중 '호흡기 결핵 환자'의 전염성 여부와 관련된 설명으로 옳은 것은?", "options": ["전염성 환자의 가족만 대상이다.", "비전염성 환자의 가족만 대상이다.", "전염성 여부와 상관없이 대상이 된다.", "도말 양성인 경우에만 대상이다."], "a": 3, "exp": "호흡기 결핵 환자의 전염성 여부와 상관없이 진단일 기준 3개월 이전부터 치료 시작 후 2주까지 접촉한 가족 및 동거인이 대상입니다."}, {"id": 2, "q": "가족접촉자 조사 대상 기간 기준은?", "options": ["진단일 기준 1개월 이전부터", "진단일 기준 3개월 이전부터 치료 시작 후 2주까지", "진단일 기준 6개월 이전부터", "진단일 기준 1년 이전부터"], "a": 2, "exp": "호흡기 결핵 환자의 진단일을 기준으로 3개월 이전부터 치료 시작 후 2주까지 접촉한 가족 및 동거인이 대상입니다."}, {"id":
