@@ -17,7 +17,7 @@
 <body class="text-gray-800">
     <div class="max-w-3xl mx-auto p-4 md:p-8 mt-10 bg-white rounded-xl shadow-lg">
         <h1 class="text-3xl font-bold text-center text-blue-600 mb-2">2026 국가결핵관리지침 퀴즈</h1>
-        <p class="text-center text-gray-500 mb-6" id="status-text">매번 새로운 10문제가 무작위로 출제됩니다.</p>
+        <p class="text-center text-gray-500 mb-6">매번 새로운 10문제가 무작위로 출제됩니다.</p>
         
         <div id="start-screen" class="text-center py-10">
             <button id="start-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-md transition-transform transform hover:scale-105">
@@ -36,9 +36,7 @@
             
             <div id="question-container" class="mb-6">
                 <h2 class="text-xl font-bold mb-4" id="question-text">문제 내용</h2>
-                <div id="options-container" class="space-y-3">
-                    <!-- Options injected here -->
-                </div>
+                <div id="options-container" class="space-y-3"></div>
             </div>
 
             <div id="explanation-container" class="hidden p-4 mb-6 bg-yellow-50 border border-yellow-200 rounded-lg">
@@ -58,222 +56,117 @@
             <button id="restart-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-md">
                 새로운 문제로 다시 풀기
             </button>
-            <button id="reset-history-btn" class="mt-4 block mx-auto text-sm text-gray-400 hover:text-red-500 underline">
-                출제 기록 초기화
-            </button>
         </div>
     </div>
 
     <script>
-        // 문제 은행 데이터 (20개 기본 탑재 및 500제 확장 구조)
         const questionBank = [
-            { id: 1, q: "가족접촉자 조사 대상 기준 중 '호흡기 결핵 환자'의 전염성 여부와 관련된 설명으로 옳은 것은?", options: ["전염성 환자의 가족만 대상이다.", "비전염성 환자의 가족만 대상이다.", "전염성 여부와 상관없이 대상이 된다.", "도말 양성인 경우에만 대상이다."], a: 3, exp: "호흡기 결핵 환자의 전염성 여부와 상관없이 진단일 기준 3개월 이전부터 치료 시작 후 2주까지 접촉한 가족 및 동거인이 대상입니다." },
-            { id: 2, q: "가족접촉자 조사 대상 기간 기준은?", options: ["진단일 기준 1개월 이전부터", "진단일 기준 3개월 이전부터 치료 시작 후 2주까지", "진단일 기준 6개월 이전부터", "진단일 기준 1년 이전부터"], a: 2, exp: "호흡기 결핵 환자의 진단일을 기준으로 3개월 이전부터 치료 시작 후 2주까지 접촉한 가족 및 동거인이 대상입니다." },
-            { id: 3, q: "만 8세 이하 소아 폐외결핵 환자의 가족접촉자 조사를 시행하는 주된 이유는?", options: ["성장 발달 확인을 위해", "가족 중 감염원을 파악하기 위해", "학교 전파 차단을 위해", "백신 접종력 확인을 위해"], a: 2, exp: "만 8세 이하 소아 폐외결핵 환자는 초회 감염일 가능성이 높아 가족 중 감염원을 파악하기 위해 접촉자 조사를 시행합니다." },
-            { id: 4, q: "가족접촉자 검진수첩은 환자 신고일 기준으로 얼마 이내에 검사를 받도록 안내해야 하는가?", options: ["1주일 이내", "2주일 이내", "1개월 이내", "3개월 이내"], a: 3, exp: "결핵환자는 가족접촉자에게 검진수첩을 전달하고 신고일 기준으로 1개월 내에 검사를 받도록 안내해야 합니다." },
-            { id: 5, q: "가족접촉자 전원을 대상으로 활동성 결핵을 배제하기 위해 기본적으로 실시하는 결핵 검사는?", options: ["흉부X선 검사", "가래 도말검사", "가래 배양검사", "결핵균 핵산증폭검사"], a: 1, exp: "전체 가족접촉자를 대상으로 활동성 결핵 배제를 위해 흉부X선 검사를 실시합니다." },
-            { id: 6, q: "가족접촉자 중 다제내성결핵 환자의 접촉자인 경우, 가래검사 시 반드시 시행해야 하는 검사는?", options: ["통상감수성검사", "Xpert MTB/RIF 또는 BD max", "항산균 도말검사만", "인터페론감마 분비검사"], a: 2, exp: "다제내성결핵 환자 접촉자인 경우 가래검사 시 Xpert MTB/RIF 또는 BD max를 시행합니다." },
-            { id: 7, q: "가족접촉자의 초회 잠복결핵감염검사가 음성인 경우, 2차 검사(연속검사)는 언제 시행하는가?", options: ["마지막 접촉일 기준 2~4주 후", "마지막 접촉일 기준 4~6주 후", "마지막 접촉일 기준 8~10주 후", "마지막 접촉일 기준 12주 후"], a: 3, exp: "초회 검사 음성 시, 마지막 접촉일 또는 전염성 소실일 기준 8~10주 이후 2차 잠복결핵감염 검사를 시행합니다." },
-            { id: 8, q: "잠복결핵감염자 중 미치료자의 흉부X선 추적검사 주기는?", options: ["진단일로부터 6개월간 1개월 간격", "진단일로부터 1년간 3개월 간격", "진단일로부터 2년간 6개월 간격", "진단일로부터 3년간 1년 간격"], a: 2, exp: "잠복결핵감염 미치료자는 진단일로부터 1년간 3개월 간격으로 흉부X선 검사를 시행합니다." },
-            { id: 9, q: "다제내성결핵환자의 접촉자 중 잠복결핵감염 미치료자의 흉부X선 추적검사 기간 및 횟수는?", options: ["1년간 총 4회", "2년간 총 6회 (3,6,9,12,18,24개월)", "3년간 총 3회", "5년간 총 5회"], a: 2, exp: "다제내성결핵 환자의 접촉자 중 잠복결핵감염 미치료자는 2년간(3, 6, 9, 12, 18, 24개월) 추적관리를 시행합니다." },
-            { id: 10, q: "집단시설 결핵역학조사는 크게 두 가지 조사로 구성된다. 지표환자 조사와 무엇인가?", options: ["환경 조사", "접촉자 조사", "시설 방역", "의료진 조사"], a: 2, exp: "집단시설 결핵역학조사는 '지표환자 조사'와 '접촉자 조사'로 구성됩니다." },
-            { id: 11, q: "집단시설 역학조사 실시 기준 중, 지표환자의 호흡기검체 검사 결과가 음성일지라도 조사를 실시해야 하는 경우는?", options: ["기침 증상이 1주일 지속될 때", "흉부X선 상 공동이 확인된 경우", "과거 결핵 치료력이 있을 때", "환자가 고령일 때"], a: 2, exp: "호흡기검체 검사 음성이어도 흉부X선 상 공동이 확인된 경우 전염성이 높을 수 있어 조사를 실시합니다." },
-            { id: 12, q: "집단시설 결핵 발생 시 지표환자의 '전염성 추정 기간'을 설정할 때 고려하는 요소가 아닌 것은?", options: ["결핵 증상", "가래 도말검사 결과", "흉부X선 검사 상 공동 유무", "환자의 혈액형"], a: 4, exp: "전염성 추정 기간은 결핵 증상, 가래 도말검사 결과, 흉부X선 공동 유무를 종합하여 결정합니다." },
-            { id: 13, q: "밀접접촉자 선정 기준 중 '시간'에 대한 조건으로 옳은 것은?", options: ["연속 4시간 이상 접촉", "전염성 추정기간 누적 10시간 이상 접촉", "하루 연속 8시간 이상 또는 누적 40시간 이상 접촉", "누적 100시간 이상 접촉"], a: 3, exp: "하루 연속 8시간 이상 접촉하거나 누적 기준으로 40시간 이상 접촉한 경우 우선적으로 밀접접촉자에 포함됩니다." },
-            { id: 14, q: "집단시설 내 전염성결핵환자 발생 시, 보건소는 환자 본인과 소속 기관장에게 어떤 조치를 통보해야 하는가?", options: ["벌금 부과 통지", "업무종사 및 등교 일시 제한 대상자 통보", "시설 폐쇄 명령", "해고 권고"], a: 2, exp: "전염성결핵환자의 소속 기관장과 환자 본인에게 '업무종사 및 등교 일시 제한 대상자 통보서'를 지체 없이 발급해야 합니다." },
-            { id: 15, q: "집단시설 결핵역학조사 현장조사 후 며칠 이내에 질병보건통합관리시스템에 현장조사서를 등록해야 하는가?", options: ["1일 이내", "3일 이내 (근무일 기준)", "5일 이내", "7일 이내"], a: 2, exp: "현장조사일로부터 3일 이내(근무일 기준)에 시스템에 등록해야 합니다." },
-            { id: 16, q: "5세 미만 결핵환자 감염원 조사와 관련하여 BCG 백신 접종에 의한 감염 가능성을 감별하기 위해 의뢰하는 검사는?", options: ["HIV 항체 검사", "M. bovis BCG 감별검사 (유전형 검사)", "통상감수성 검사", "IGRA 혈액검사"], a: 2, exp: "BCG 백신에 의한 M. bovis BCG 감염 가능성을 확인하기 위해 유전형 검사를 의뢰합니다." },
-            { id: 17, q: "집단시설 접촉자의 추적 흉부X선 검사는 초회 검사일 기준으로 언제 시행하는가?", options: ["1개월 후", "3개월 후", "6개월 후", "1년 후"], a: 2, exp: "전체 접촉자를 대상으로 잠복결핵감염 진단 여부와 관계없이 초회 검사일 기준 3개월 후 추적 흉부X선 검사를 실시합니다." },
-            { id: 18, q: "집단시설 결핵역학조사 시 '중점사례'로 분류되어 시·도가 총괄 관리해야 하는 경우가 아닌 것은?", options: ["신생아, 영·유아 결핵노출 사례", "추가환자가 발견된 사례", "지표환자가 단순 흉부X선 유소견자인 사례", "지표환자가 다제내성결핵으로 도말 양성인 사례"], a: 3, exp: "단순 흉부X선 유소견자 사례는 중점사례에 해당하지 않으며, 영유아 노출, 추가환자 발생, 다제내성결핵 도말 양성 등이 중점사례입니다." },
-            { id: 19, q: "집단시설 '접촉자 조사 종료보고서'는 접촉자 조사 완료 시점으로부터 언제까지 시스템에 등록해야 하는가?", "options": ["3일 이내", "1주일 이내", "2주 이내", "1개월 이내"], a: 3, "exp: "접촉자 조사 완료 시점(예: 3개월 추적검사 완료)으로부터 2주 이내에 종료보고서를 작성하여 등록해야 합니다." },
-            { id: 20, q: "투베르쿨린 피부반응검사(TST) 시행 전 반드시 확인해야 할 백신 접종력은 무엇인가?", "options": ["코로나19 백신 접종력", "사백신 접종력", "최근 4주 이내 생백신 접종력", "모든 백신은 상관없음"], a: 3, "exp: "생백신 접종은 TST 결과에서 위음성을 유발할 수 있으므로, 최근 4주 이내 생백신 접종력을 확인해야 합니다." }
+            { id: 1, q: "가족접촉자 조사의 주된 목적으로 가장 옳은 것은?", options: ["추가 결핵환자 발견 및 잠복결핵감염 치료를 통한 확산 방지", "직장 동료 전수조사 및 격리", "결핵환자의 식단 관리 및 영양 공급", "보건소 의료진 역량 평가"], a: 0, exp: "가족접촉자 조사는 추가 결핵환자 및 잠복결핵감염자를 조기 발견·치료하여 결핵 확산을 방지하기 위함입니다." },
+            { id: 2, q: "호흡기 결핵 환자의 가족접촉자 조사 대상 기간 기준은?", options: ["진단일 기준 1개월 이전부터 치료 시작 후 1주까지", "진단일 기준 3개월 이전부터 치료 시작 후 2주까지", "진단일 기준 6개월 이전부터 치료 종료 시까지", "진단일 기준 1년 이전부터 치료 시작 전까지"], a: 1, exp: "호흡기 결핵 환자의 진단일을 기준으로 3개월 이전부터 치료 시작 후 2주까지 같은 공간에서 생활하거나 주기적으로 접촉한 가족 및 동거인이 대상입니다." },
+            { id: 3, q: "만 8세 이하 소아 폐외결핵 환자의 경우 가족접촉자 조사를 시행하는 주된 이유는?", options: ["성장 발달 상태를 확인하기 위해", "학교 내 전파를 차단하기 위해", "가족 중 감염원을 파악하기 위해", "BCG 예방접종력을 확인하기 위해"], a: 2, exp: "만 8세 이하 소아 폐외결핵 환자는 초회 감염일 가능성이 높아 가족 중 감염원을 파악하기 위해 접촉자 조사를 시행합니다." },
+            { id: 4, q: "가족접촉자 검진수첩은 환자 신고일 기준으로 얼마 이내에 검사를 받도록 안내해야 하는가?", options: ["1주일 이내", "2주일 이내", "1개월 이내", "3개월 이내"], a: 2, exp: "결핵환자는 가족접촉자에게 검진수첩을 전달하고 신고일 기준으로 1개월 내에 보건소나 검진의료기관을 방문하여 검사를 받도록 안내해야 합니다." },
+            { id: 5, q: "가족접촉자 전원을 대상으로 활동성 결핵을 배제하기 위해 기본적으로 실시하는 검사는?", options: ["흉부X선 검사", "가래 도말검사", "가래 배양검사", "결핵균 핵산증폭검사"], a: 0, exp: "전체 가족접촉자를 대상으로 활동성 결핵을 배제하기 위해 초회 및 추적 흉부X선 검사를 실시합니다." },
+            { id: 6, q: "집단시설 결핵역학조사의 구성 요소로 옳은 것은?", options: ["지표환자 조사와 접촉자 조사", "환경 소독과 시설 폐쇄", "건강검진과 예방접종", "방역 인력 배치와 역학조사관 교육"], a: 0, exp: "결핵역학조사는 '지표환자 조사'와 '접촉자 조사'로 구성됩니다." },
+            { id: 7, q: "집단시설 내 결핵환자 발생 시, 지표환자의 호흡기검체 검사 결과가 음성일지라도 조사를 실시해야 하는 기준은?", options: ["기침 증상이 3일 이상 지속될 때", "흉부X선 상 공동이 확인된 경우", "과거 결핵 치료력이 있을 때", "환자가 65세 이상 고령일 때"], a: 1, exp: "호흡기검체 검사 결과 음성이나 흉부X선 상 공동이 확인된 경우 역학조사를 실시합니다." },
+            { id: 8, q: "밀접접촉자 선정 기준 중 '시간'에 대한 조건으로 옳은 것은?", options: ["하루 연속 4시간 이상 또는 누적 20시간 이상", "하루 연속 8시간 이상 또는 누적 40시간 이상", "하루 연속 12시간 이상 또는 누적 60시간 이상", "연속 24시간 이상"], a: 1, exp: "하루에 연속으로 8시간 이상 접촉했거나 전염성 추정기간 동안 누적 기준 40시간 이상 접촉한 경우 밀접접촉자에 포함됩니다." },
+            { id: 9, q: "투베르쿨린 피부반응검사(TST) 시행 전 반드시 확인해야 할 최근 백신 접종력은?", options: ["사백신 접종력", "코로나19 백신 접종력", "최근 4주 이내 생백신 접종력", "모든 백신은 무관함"], a: 2, exp: "생백신 접종은 TST 결과에 위음성을 유발할 수 있으므로, 최근 4주 이내 생백신 접종력을 확인해야 합니다."},
+            { id: 10, q: "결핵환자 '사례조사'의 1차 조사 시기로 적절한 것은?", options: ["신고일 당일", "신고일 기준 3일 이내 (토·공휴일 제외)", "신고일 기준 7일 이내", "신고일 기준 14일 이내"], a: 1, exp: "사례조사의 1차 조사는 신고일 기준 3일 이내(토요일 및 법정공휴일 제외)에 실시해야 합니다." }
         ];
 
-        let availableQuestions = [];
         let currentQuiz = [];
-        let currentQuestionIndex = 0;
+        let currentIdx = 0;
         let score = 0;
-        let selectedOptionIndex = null;
+        let selectedOpt = null;
         let isAnswered = false;
-        let currentShuffledOptions = [];
+        let shuffledOpts = [];
 
-        const QUESTIONS_PER_QUIZ = 10;
-        const STORAGE_KEY = 'tb_quiz_asked_ids';
-
-        // DOM Elements
-        const startScreen = document.getElementById('start-screen');
-        const quizScreen = document.getElementById('quiz-screen');
-        const resultScreen = document.getElementById('result-screen');
         const startBtn = document.getElementById('start-btn');
-        const nextBtn = document.getElementById('next-btn');
         const submitBtn = document.getElementById('submit-btn');
+        const nextBtn = document.getElementById('next-btn');
         const restartBtn = document.getElementById('restart-btn');
-        const resetHistoryBtn = document.getElementById('reset-history-btn');
-        
-        const questionText = document.getElementById('question-text');
-        const optionsContainer = document.getElementById('options-container');
-        const questionCounter = document.getElementById('question-counter');
-        const progressBar = document.getElementById('progress-bar');
-        const scoreText = document.getElementById('score-text');
-        const explanationContainer = document.getElementById('explanation-container');
-        const explanationText = document.getElementById('explanation-text');
 
-        // 배열 셔플 함수
-        function shuffle(array) {
-            let currentIndex = array.length, randomIndex;
-            while (currentIndex != 0) {
-                randomIndex = Math.floor(Math.random() * currentIndex);
-                currentIndex--;
-                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
-            }
-            return array;
-        }
-
-        // 초기화 및 문제 추출
-        function initQuiz() {
-            let askedIds = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            
-            // 아직 안 푼 문제 필터링
-            availableQuestions = questionBank.filter(q => !askedIds.includes(q.id));
-            
-            // 만약 남은 문제가 출제 수보다 적으면 기록 초기화
-            if (availableQuestions.length < QUESTIONS_PER_QUIZ) {
-                askedIds = [];
-                availableQuestions = [...questionBank];
-            }
-            
-            // 랜덤으로 문제 섞기
-            shuffle(availableQuestions);
-            
-            // 10문제 추출
-            currentQuiz = availableQuestions.slice(0, QUESTIONS_PER_QUIZ);
-            
-            // 출제된 문제 ID 저장
-            const newAskedIds = [...askedIds, ...currentQuiz.map(q => q.id)];
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(newAskedIds));
-
-            currentQuestionIndex = 0;
+        function startQuiz() {
+            currentQuiz = [...questionBank].sort(() => 0.5 - Math.random()).slice(0, 10);
+            currentIdx = 0;
             score = 0;
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            loadQuestion();
         }
 
-        function displayQuestion() {
+        function loadQuestion() {
             isAnswered = false;
-            selectedOptionIndex = null;
+            selectedOpt = null;
             submitBtn.classList.remove('hidden');
             nextBtn.classList.add('hidden');
-            explanationContainer.classList.add('hidden');
-            
-            const q = currentQuiz[currentQuestionIndex];
-            questionText.innerText = q.q;
-            questionCounter.innerText = `문제 ${currentQuestionIndex + 1} / ${QUESTIONS_PER_QUIZ}`;
-            progressBar.style.width = `${((currentQuestionIndex) / QUESTIONS_PER_QUIZ) * 100}%`;
+            document.getElementById('explanation-container').classList.add('hidden');
 
-            // 보기 섞기 (원래 인덱스 추적)
-            currentShuffledOptions = q.options.map((text, idx) => ({ text, originalIndex: idx + 1 }));
-            shuffle(currentShuffledOptions);
+            const q = currentQuiz[currentIdx];
+            document.getElementById('question-text').innerText = q.q;
+            document.getElementById('question-counter').innerText = `문제 ${currentIdx + 1} / 10`;
+            document.getElementById('progress-bar').style.width = `${((currentIdx) / 10) * 100}%`;
 
-            optionsContainer.innerHTML = '';
-            currentShuffledOptions.forEach((opt, index) => {
+            shuffledOpts = q.options.map((text, idx) => ({ text, origIdx: idx }));
+            shuffledOpts.sort(() => 0.5 - Math.random());
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            shuffledOpts.forEach((opt, i) => {
                 const btn = document.createElement('button');
-                btn.className = 'option-btn w-full text-left p-4 rounded-lg border border-gray-300 hover:bg-gray-50 focus:outline-none';
+                btn.className = 'option-btn w-full text-left p-4 rounded-lg border border-gray-300 hover:bg-gray-50';
                 btn.innerText = opt.text;
-                btn.onclick = () => selectOption(index, btn);
-                optionsContainer.appendChild(btn);
+                btn.onclick = () => {
+                    if (isAnswered) return;
+                    selectedOpt = i;
+                    Array.from(container.children).forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                };
+                container.appendChild(btn);
             });
         }
 
-        function selectOption(index, btnNode) {
-            if (isAnswered) return;
-            selectedOptionIndex = index;
-            
-            const buttons = optionsContainer.children;
-            for (let i = 0; i < buttons.length; i++) {
-                buttons[i].classList.remove('selected');
-            }
-            btnNode.classList.add('selected');
-        }
-
-        function checkAnswer() {
-            if (selectedOptionIndex === null) {
+        function checkAns() {
+            if (selectedOpt === null) {
                 alert("정답을 선택해주세요.");
                 return;
             }
-            
             isAnswered = true;
             submitBtn.classList.add('hidden');
             nextBtn.classList.remove('hidden');
-            
-            const q = currentQuiz[currentQuestionIndex];
-            const buttons = optionsContainer.children;
-            
-            const correctOriginalIndex = q.a;
-            let isCorrect = false;
 
-            for (let i = 0; i < buttons.length; i++) {
-                if (currentShuffledOptions[i].originalIndex === correctOriginalIndex) {
+            const q = currentQuiz[currentIdx];
+            const buttons = document.getElementById('options-container').children;
+
+            shuffledOpts.forEach((opt, i) => {
+                if (opt.origIdx === q.a) {
                     buttons[i].classList.add('correct');
-                    if (i === selectedOptionIndex) {
-                        isCorrect = true;
-                        score += 10;
-                    }
-                } else if (i === selectedOptionIndex) {
+                    if (i === selectedOpt) score += 10;
+                } else if (i === selectedOpt) {
                     buttons[i].classList.add('incorrect');
                 }
-            }
+            });
 
-            explanationText.innerText = q.exp;
-            explanationContainer.classList.remove('hidden');
-            progressBar.style.width = `${((currentQuestionIndex + 1) / QUESTIONS_PER_QUIZ) * 100}%`;
+            document.getElementById('explanation-text').innerText = q.exp;
+            document.getElementById('explanation-container').classList.remove('hidden');
+            document.getElementById('progress-bar').style.width = `${((currentIdx + 1) / 10) * 100}%`;
         }
 
-        function showResults() {
-            quizScreen.classList.add('hidden');
-            resultScreen.classList.remove('hidden');
-            scoreText.innerText = score;
-        }
-
-        // 이벤트 리스너 연결
-        document.addEventListener('DOMContentLoaded', () => {
-            if (startBtn) {
-                startBtn.addEventListener('click', () => {
-                    initQuiz();
-                    if (startScreen) startScreen.classList.add('hidden');
-                    if (quizScreen) quizScreen.classList.remove('hidden');
-                    displayQuestion();
-                });
+        startBtn.onclick = startQuiz;
+        submitBtn.onclick = checkAns;
+        nextBtn.onclick = () => {
+            currentIdx++;
+            if (currentIdx < 10) {
+                loadQuestion();
+            } else {
+                document.getElementById('quiz-screen').classList.add('hidden');
+                document.getElementById('result-screen').classList.remove('hidden');
+                document.getElementById('score-text').innerText = score;
             }
-
-            if (submitBtn) {
-                submitBtn.addEventListener('click', checkAnswer);
-            }
-
-            if (nextBtn) {
-                nextBtn.addEventListener('click', () => {
-                    currentQuestionIndex++;
-                    if (currentQuestionIndex < QUESTIONS_PER_QUIZ) {
-                        displayQuestion();
-                    } else {
-                        showResults();
-                    }
-                });
-            }
-
-            if (restartBtn) {
-                restartBtn.addEventListener('click', () => {
-                    if (resultScreen) resultScreen.classList.add('hidden');
-                    if (startScreen) startScreen.classList.remove('hidden');
-                });
-            }
-
-            if (resetHistoryBtn) {
-                resetHistoryBtn.addEventListener('click', () => {
-                    if(confirm("모든 문제 출제 기록을 초기화하시겠습니까?")) {
-                        localStorage.removeItem(STORAGE_KEY);
-                        alert("초기화 완료되었습니다.");
-                    }
-                });
-            }
-        });
+        };
+        restartBtn.onclick = () => {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+        };
     </script>
 </body>
 </html>
