@@ -59,13 +59,13 @@
                 새로운 문제로 다시 풀기
             </button>
             <button id="reset-history-btn" class="mt-4 block mx-auto text-sm text-gray-400 hover:text-red-500 underline">
-                출제 기록 초기화 (문제 다시 풀기)
+                출제 기록 초기화
             </button>
         </div>
     </div>
 
     <script>
-        // 500제 문제 은행 데이터 (필요시 추가 가능)
+        // 문제 은행 데이터 (20개 기본 탑재 및 500제 확장 구조)
         const questionBank = [
             { id: 1, q: "가족접촉자 조사 대상 기준 중 '호흡기 결핵 환자'의 전염성 여부와 관련된 설명으로 옳은 것은?", options: ["전염성 환자의 가족만 대상이다.", "비전염성 환자의 가족만 대상이다.", "전염성 여부와 상관없이 대상이 된다.", "도말 양성인 경우에만 대상이다."], a: 3, exp: "호흡기 결핵 환자의 전염성 여부와 상관없이 진단일 기준 3개월 이전부터 치료 시작 후 2주까지 접촉한 가족 및 동거인이 대상입니다." },
             { id: 2, q: "가족접촉자 조사 대상 기간 기준은?", options: ["진단일 기준 1개월 이전부터", "진단일 기준 3개월 이전부터 치료 시작 후 2주까지", "진단일 기준 6개월 이전부터", "진단일 기준 1년 이전부터"], a: 2, exp: "호흡기 결핵 환자의 진단일을 기준으로 3개월 이전부터 치료 시작 후 2주까지 접촉한 가족 및 동거인이 대상입니다." },
@@ -80,11 +80,11 @@
             { id: 11, q: "집단시설 역학조사 실시 기준 중, 지표환자의 호흡기검체 검사 결과가 음성일지라도 조사를 실시해야 하는 경우는?", options: ["기침 증상이 1주일 지속될 때", "흉부X선 상 공동이 확인된 경우", "과거 결핵 치료력이 있을 때", "환자가 고령일 때"], a: 2, exp: "호흡기검체 검사 음성이어도 흉부X선 상 공동이 확인된 경우 전염성이 높을 수 있어 조사를 실시합니다." },
             { id: 12, q: "집단시설 결핵 발생 시 지표환자의 '전염성 추정 기간'을 설정할 때 고려하는 요소가 아닌 것은?", options: ["결핵 증상", "가래 도말검사 결과", "흉부X선 검사 상 공동 유무", "환자의 혈액형"], a: 4, exp: "전염성 추정 기간은 결핵 증상, 가래 도말검사 결과, 흉부X선 공동 유무를 종합하여 결정합니다." },
             { id: 13, q: "밀접접촉자 선정 기준 중 '시간'에 대한 조건으로 옳은 것은?", options: ["연속 4시간 이상 접촉", "전염성 추정기간 누적 10시간 이상 접촉", "하루 연속 8시간 이상 또는 누적 40시간 이상 접촉", "누적 100시간 이상 접촉"], a: 3, exp: "하루 연속 8시간 이상 접촉하거나 누적 기준으로 40시간 이상 접촉한 경우 우선적으로 밀접접촉자에 포함됩니다." },
-            { id: 14, q: "집단시설 내 전염성결핵환자 발생 시, 보건소는 환자 본인과 소속 기관장에게 어떤 조치를 통보해야 하는가?", options: ["벌금 부과 통지", "업무종사 및 등교 일시 제한 대상자 통보", "시설 폐쇄 명령", "해고 권고"], a: 2, "exp: "전염성결핵환자의 소속 기관장과 환자 본인에게 '업무종사 및 등교 일시 제한 대상자 통보서'를 지체 없이 발급해야 합니다." },
-            { id: 15, q: "집단시설 결핵역학조사 현장조사 후 며칠 이내에 질병보건통합관리시스템에 현장조사서를 등록해야 하는가?", options: ["1일 이내", "3일 이내 (근무일 기준)", "5일 이내", "7일 이내"], a: 2, "exp: "현장조사일로부터 3일 이내(근무일 기준)에 시스템에 등록해야 합니다." },
-            { id: 16, q: "5세 미만 결핵환자 감염원 조사와 관련하여 BCG 백신 접종에 의한 감염 가능성을 감별하기 위해 의뢰하는 검사는?", options: ["HIV 항체 검사", "M. bovis BCG 감별검사 (유전형 검사)", "통상감수성 검사", "IGRA 혈액검사"], a: 2, "exp: "BCG 백신에 의한 M. bovis BCG 감염 가능성을 확인하기 위해 유전형 검사를 의뢰합니다." },
-            { id: 17, q: "집단시설 접촉자의 추적 흉부X선 검사는 초회 검사일 기준으로 언제 시행하는가?", "options": ["1개월 후", "3개월 후", "6개월 후", "1년 후"], "a": 2, "exp": "전체 접촉자를 대상으로 잠복결핵감염 진단 여부와 관계없이 초회 검사일 기준 3개월 후 추적 흉부X선 검사를 실시합니다." },
-            { id: 18, q: "집단시설 결핵역학조사 시 '중점사례'로 분류되어 시·도가 총괄 관리해야 하는 경우가 아닌 것은?", "options": ["신생아, 영·유아 결핵노출 사례", "추가환자가 발견된 사례", "지표환자가 단순 흉부X선 유소견자인 사례", "지표환자가 다제내성결핵으로 도말 양성인 사례"], a: 3, "exp: "단순 흉부X선 유소견자 사례는 중점사례에 해당하지 않으며, 영유아 노출, 추가환자 발생, 다제내성결핵 도말 양성 등이 중점사례입니다." },
+            { id: 14, q: "집단시설 내 전염성결핵환자 발생 시, 보건소는 환자 본인과 소속 기관장에게 어떤 조치를 통보해야 하는가?", options: ["벌금 부과 통지", "업무종사 및 등교 일시 제한 대상자 통보", "시설 폐쇄 명령", "해고 권고"], a: 2, exp: "전염성결핵환자의 소속 기관장과 환자 본인에게 '업무종사 및 등교 일시 제한 대상자 통보서'를 지체 없이 발급해야 합니다." },
+            { id: 15, q: "집단시설 결핵역학조사 현장조사 후 며칠 이내에 질병보건통합관리시스템에 현장조사서를 등록해야 하는가?", options: ["1일 이내", "3일 이내 (근무일 기준)", "5일 이내", "7일 이내"], a: 2, exp: "현장조사일로부터 3일 이내(근무일 기준)에 시스템에 등록해야 합니다." },
+            { id: 16, q: "5세 미만 결핵환자 감염원 조사와 관련하여 BCG 백신 접종에 의한 감염 가능성을 감별하기 위해 의뢰하는 검사는?", options: ["HIV 항체 검사", "M. bovis BCG 감별검사 (유전형 검사)", "통상감수성 검사", "IGRA 혈액검사"], a: 2, exp: "BCG 백신에 의한 M. bovis BCG 감염 가능성을 확인하기 위해 유전형 검사를 의뢰합니다." },
+            { id: 17, q: "집단시설 접촉자의 추적 흉부X선 검사는 초회 검사일 기준으로 언제 시행하는가?", options: ["1개월 후", "3개월 후", "6개월 후", "1년 후"], a: 2, exp: "전체 접촉자를 대상으로 잠복결핵감염 진단 여부와 관계없이 초회 검사일 기준 3개월 후 추적 흉부X선 검사를 실시합니다." },
+            { id: 18, q: "집단시설 결핵역학조사 시 '중점사례'로 분류되어 시·도가 총괄 관리해야 하는 경우가 아닌 것은?", options: ["신생아, 영·유아 결핵노출 사례", "추가환자가 발견된 사례", "지표환자가 단순 흉부X선 유소견자인 사례", "지표환자가 다제내성결핵으로 도말 양성인 사례"], a: 3, exp: "단순 흉부X선 유소견자 사례는 중점사례에 해당하지 않으며, 영유아 노출, 추가환자 발생, 다제내성결핵 도말 양성 등이 중점사례입니다." },
             { id: 19, q: "집단시설 '접촉자 조사 종료보고서'는 접촉자 조사 완료 시점으로부터 언제까지 시스템에 등록해야 하는가?", "options": ["3일 이내", "1주일 이내", "2주 이내", "1개월 이내"], a: 3, "exp: "접촉자 조사 완료 시점(예: 3개월 추적검사 완료)으로부터 2주 이내에 종료보고서를 작성하여 등록해야 합니다." },
             { id: 20, q: "투베르쿨린 피부반응검사(TST) 시행 전 반드시 확인해야 할 백신 접종력은 무엇인가?", "options": ["코로나19 백신 접종력", "사백신 접종력", "최근 4주 이내 생백신 접종력", "모든 백신은 상관없음"], a: 3, "exp: "생백신 접종은 TST 결과에서 위음성을 유발할 수 있으므로, 최근 4주 이내 생백신 접종력을 확인해야 합니다." }
         ];
@@ -209,4 +209,71 @@
             const correctOriginalIndex = q.a;
             let isCorrect = false;
 
-            for (let i =
+            for (let i = 0; i < buttons.length; i++) {
+                if (currentShuffledOptions[i].originalIndex === correctOriginalIndex) {
+                    buttons[i].classList.add('correct');
+                    if (i === selectedOptionIndex) {
+                        isCorrect = true;
+                        score += 10;
+                    }
+                } else if (i === selectedOptionIndex) {
+                    buttons[i].classList.add('incorrect');
+                }
+            }
+
+            explanationText.innerText = q.exp;
+            explanationContainer.classList.remove('hidden');
+            progressBar.style.width = `${((currentQuestionIndex + 1) / QUESTIONS_PER_QUIZ) * 100}%`;
+        }
+
+        function showResults() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            scoreText.innerText = score;
+        }
+
+        // 이벤트 리스너 연결
+        document.addEventListener('DOMContentLoaded', () => {
+            if (startBtn) {
+                startBtn.addEventListener('click', () => {
+                    initQuiz();
+                    if (startScreen) startScreen.classList.add('hidden');
+                    if (quizScreen) quizScreen.classList.remove('hidden');
+                    displayQuestion();
+                });
+            }
+
+            if (submitBtn) {
+                submitBtn.addEventListener('click', checkAnswer);
+            }
+
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    currentQuestionIndex++;
+                    if (currentQuestionIndex < QUESTIONS_PER_QUIZ) {
+                        displayQuestion();
+                    } else {
+                        showResults();
+                    }
+                });
+            }
+
+            if (restartBtn) {
+                restartBtn.addEventListener('click', () => {
+                    if (resultScreen) resultScreen.classList.add('hidden');
+                    if (startScreen) startScreen.classList.remove('hidden');
+                });
+            }
+
+            if (resetHistoryBtn) {
+                resetHistoryBtn.addEventListener('click', () => {
+                    if(confirm("모든 문제 출제 기록을 초기화하시겠습니까?")) {
+                        localStorage.removeItem(STORAGE_KEY);
+                        alert("초기화 완료되었습니다.");
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
